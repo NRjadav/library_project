@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 # Create your views here.
 def home(request):
-    return HttpResponse("hello")
+    return HttpResponse("hello1")
 
 
 #---------------Pool View----------------------        
