@@ -8,7 +8,8 @@ def home(request):
     return HttpResponse("hello1")
 
 
-#---------------Pool View----------------------        
+# ---------------Category View----------------------  
+      
 class category_view(APIView):
     def get(self, request, id=None):
         if id:
@@ -54,4 +55,54 @@ class category_view(APIView):
                 return Response({'status': "invalid id"})
         else:
             return Response({'status': "invalid data"})
+
+
+# ---------------Author View----------------------  
+      
+class author_view(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                uid = author.objects.get(id=id)
+                serializer = author_serializers(uid)
+                return Response({'status': 'success', 'data': serializer.data})
+            except author.DoesNotExist:
+                return Response({'status': "Invalid"})
+        else:
+            uid = author.objects.all().order_by("-id")
+            serializer = author_serializers(uid, many=True)
+            return Response({'status': 'success', 'data': serializer.data})
+
+    def post(self, request):
+        serializer = author_serializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def patch(self, request, id=None):
+        try:
+            uid = author.objects.get(id=id)
+        except author.DoesNotExist:
+            return Response({'status': "invalid data"})
+        
+        serializer = author_serializers(uid, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                uid = author.objects.get(id=id)
+                uid.delete()
+                return Response({'status': 'Deleted data'})
+            except author.DoesNotExist:
+                return Response({'status': "invalid id"})
+        else:
+            return Response({'status': "invalid data"})
+
 

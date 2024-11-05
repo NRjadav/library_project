@@ -4,3 +4,4 @@ from .models import *
 
 
 admin.site.register(category)
+admin.site.register(author)

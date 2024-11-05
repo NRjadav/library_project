@@ -21,6 +21,10 @@ from .views import *
 
 urlpatterns = [
     path('', views.home, name='home'),
+
     path('category/', category_view.as_view()),
     path('category/<int:id>/', category_view.as_view()),
+
+    path('author/', author_view.as_view()),
+    path('author/<int:id>/', author_view.as_view()),
 ]
