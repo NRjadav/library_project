@@ -6,7 +6,7 @@ from .models import*
 
 class category_serializers(serializers.Serializer):
     
-    id = serializers.IntegerField(required=False)
+    category_id = serializers.IntegerField(source='id',required=False)
     category_english=serializers.CharField(max_length=50,required=True)
     category_hindi=serializers.CharField(max_length=50,required=True)
     
@@ -35,7 +35,7 @@ class category_serializers(serializers.Serializer):
 
     
 class author_serializers(serializers.Serializer):
-    id = serializers.IntegerField(required=False)
+    author_id = serializers.IntegerField(source='id',required=False)
     category_data = serializers.SlugRelatedField(slug_field='id', queryset=category.objects.all(), required=False)
     author_english = serializers.CharField(max_length=100, required=True)
     author_hindi=serializers.CharField(max_length=50,required=True)

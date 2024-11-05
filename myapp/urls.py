@@ -27,4 +27,5 @@ urlpatterns = [
 
     path('author/', author_view.as_view()),
     path('author/<int:id>/', author_view.as_view()),
+    path('author/category_id/<int:category_id>/', author_view.as_view()),
 ]

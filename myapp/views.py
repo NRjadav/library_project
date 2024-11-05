@@ -60,7 +60,7 @@ class category_view(APIView):
 # ---------------Author View----------------------  
       
 class author_view(APIView):
-    def get(self, request, id=None):
+    def get(self, request, id=None , category_id=None ):
         if id:
             try:
                 uid = author.objects.get(id=id)
@@ -68,6 +68,15 @@ class author_view(APIView):
                 return Response({'status': 'success', 'data': serializer.data})
             except author.DoesNotExist:
                 return Response({'status': "Invalid"})
+        elif category_id:
+            try:
+                uid=author.objects.filter(category_data__id=category_id).order_by("-id")
+                
+                serializer=author_serializers(uid,many=True)
+                print(len(serializer.data))
+                return Response({'status':'success','data':serializer.data})
+            except:
+                return Response({'status':"Invalid"})       
         else:
             uid = author.objects.all().order_by("-id")
             serializer = author_serializers(uid, many=True)
