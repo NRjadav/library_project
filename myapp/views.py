@@ -3,12 +3,14 @@ from .models import *
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 # Create your views here.
+
 def home(request):
     return HttpResponse("hello1")
 
 
-# ---------------Category View----------------------  
+# --------------- Category View ----------------------  
       
 class category_view(APIView):
     def get(self, request, id=None):
@@ -57,7 +59,7 @@ class category_view(APIView):
             return Response({'status': "invalid data"})
 
 
-# ---------------Author View----------------------  
+# --------------- Author View ----------------------  
       
 class author_view(APIView):
     def get(self, request, id=None , category_id=None ):
