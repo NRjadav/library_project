@@ -60,6 +60,9 @@ class author_serializers(serializers.Serializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)   
-        representation["category_data"] = category_serializers(instance.category_data).data 
+        if instance.category_data is not None:
+            representation["category_data"] = category_serializers(instance.category_data).data
+        else:
+            representation["category_data"] = None 
         return representation 
         
