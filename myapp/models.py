@@ -26,5 +26,4 @@ class author(models.Model):
         return self.author_english     
    
 
-    def __str__(self):
-        return self.author_english    
+    
