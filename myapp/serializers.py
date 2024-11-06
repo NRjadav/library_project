@@ -15,28 +15,29 @@ class category_serializers(serializers.Serializer):
         models=category
         fields ='__all__'
         exclude = ('id',) 
-    """
-    def create(self, validated_data):
-        if 'category_hindi' not in validated_data or not validated_data['category_hindi']:
-            translator = Translator()
-            translation = translator.translate(validated_data['category_english'], src='en', dest='hi')
-            validated_data['category_hindi'] = translation.text
-        
-        return category.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        instance.category_english = validated_data.get('category_english', instance.category_english)
+    # def create(self, validated_data):
+    #     if 'category_hindi' not in validated_data or not validated_data['category_hindi']:
+    #         translator = Translator()
+    #         translation = translator.translate(validated_data['category_english'], src='en', dest='hi')
+    #         validated_data['category_hindi'] = translation.text
         
-        if 'category_hindi' in validated_data:
-            instance.category_hindi = validated_data['category_hindi']
-        else:
-            translator = Translator()
-            translation = translator.translate(instance.category_english, src='en', dest='hi')
-            instance.category_hindi = translation.text
+    #     return category.objects.create(**validated_data)
+
+    # def update(self, instance, validated_data):
+    #     instance.category_english = validated_data.get('category_english', instance.category_english)
         
-        instance.save()
-        return instance
-    """
+    #     if 'category_hindi' in validated_data:
+    #         instance.category_hindi = validated_data['category_hindi']
+            
+    #     else:
+    #         translator = Translator()
+    #         translation = translator.translate(instance.category_english, src='en', dest='hi')
+    #         instance.category_hindi = translation.text
+        
+    #     instance.save()
+    #     return instance
+  
     def create(self, validated_data):
         return category.objects.create(**validated_data)
 
