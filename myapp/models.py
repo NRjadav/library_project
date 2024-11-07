@@ -25,5 +25,9 @@ class author(models.Model):
     def __str__(self) -> str:
         return self.author_english     
    
-
+class user(models.Model):
+    user_id=models.CharField(max_length=100,blank=True,null=True)  
+    languages=models.CharField(max_length=100) 
+    def __str__(self) -> str:
+        return self.user_id 
     

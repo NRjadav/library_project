@@ -116,4 +116,50 @@ class author_view(APIView):
         else:
             return Response({'status': "invalid data"})
 
+# --------------- User View ----------------------  
+      
+class user_view(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                uid = user.objects.get(id=id)
+                serializer = user_serializers(uid)
+                return Response({'status': 'success', 'data': serializer.data})
+            except user.DoesNotExist:
+                return Response({'status': "Invalid"})
+        else:
+            uid = user.objects.all().order_by("-id")
+            serializer = user_serializers(uid, many=True)
+            return Response({'status': 'success', 'data': serializer.data})
 
+    def post(self, request):
+        serializer = user_serializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def patch(self, request, id=None):
+        try:
+            uid = user.objects.get(id=id)
+        except user.DoesNotExist:
+            return Response({'status': "invalid data"})
+        
+        serializer = user_serializers(uid, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                uid = user.objects.get(id=id)
+                uid.delete()
+                return Response({'status': 'Deleted data'})
+            except user.DoesNotExist:
+                return Response({'status': "invalid id"})
+        else:
+            return Response({'status': "invalid data"})

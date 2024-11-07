@@ -88,3 +88,27 @@ class author_serializers(serializers.Serializer):
             representation["category_data"] = None 
         return representation 
         
+
+#-------------User_serializers ----------------
+
+class user_serializers(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    user_id=serializers.CharField(max_length=100,required=False)
+    languages=serializers.CharField(max_length=20,required=False)   
+
+    class Meta:
+        model = user
+        fields = '__all__'
+        exclude = ('id',) 
+    
+    
+    def create(self, validated_data):
+        return user.objects.create(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        instance.user_id=validated_data.get('user_id',instance.user_id)
+        instance.languages=validated_data.get('languages',instance.languages)
+       
+        instance.save()
+        return instance     

@@ -28,4 +28,7 @@ urlpatterns = [
     path('author/', author_view.as_view()),
     path('author/<int:id>/', author_view.as_view()),
     path('author/category_id/<int:category_id>/', author_view.as_view()),
+
+    path('user/', user_view.as_view()),
+    path('user/<int:id>/', user_view.as_view()),
 ]
