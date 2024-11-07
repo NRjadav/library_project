@@ -94,7 +94,7 @@ class author_serializers(serializers.Serializer):
 class user_serializers(serializers.Serializer):
     id = serializers.IntegerField(required=False)
     user_id=serializers.CharField(max_length=100,required=False)
-    languages=serializers.CharField(max_length=20,required=False)   
+    languages=serializers.CharField(max_length=20,required=False,allow_null=True)   
 
     class Meta:
         model = user
@@ -111,4 +111,9 @@ class user_serializers(serializers.Serializer):
         instance.languages=validated_data.get('languages',instance.languages)
        
         instance.save()
-        return instance     
+        return instance   
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation.get('languages') is None:
+            representation['languages'] = ""
+        return representation  
