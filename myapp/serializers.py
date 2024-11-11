@@ -117,3 +117,39 @@ class user_serializers(serializers.Serializer):
         if representation.get('languages') is None:
             representation['languages'] = ""
         return representation  
+
+#-------------Login_User_serializers ----------------
+
+class login_user_serializers(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    user_id=serializers.CharField(max_length=100,required=False)   
+    name=serializers.CharField(max_length=100,required=False)
+    mobile_no = serializers.IntegerField(required=False)
+    email=serializers.CharField(max_length=100,required=False)
+    image=serializers.ImageField(required=False)
+    password=serializers.CharField(max_length=100,required=False)
+    languages=serializers.CharField(max_length=20,required=False)
+    theme=serializers.CharField(max_length=20,required=False)
+    class Meta:
+        model = login_user
+        fields = '__all__'
+        exclude = ('id',) 
+    
+    
+    def create(self, validated_data):
+        return login_user.objects.create(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        instance.user_id=validated_data.get('user_id',instance.user_id)
+        instance.name=validated_data.get('name',instance.name)
+        instance.mobile_no=validated_data.get('mobile_no',instance.mobile_no)
+        instance.email=validated_data.get('email',instance.email)
+        instance.image=validated_data.get('image',instance.image)
+        instance.password=validated_data.get('password',instance.password)
+        instance.languages=validated_data.get('languages',instance.languages)
+        instance.theme=validated_data.get('theme',instance.theme)
+       
+        instance.save()
+        return instance   
+    

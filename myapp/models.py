@@ -30,4 +30,16 @@ class user(models.Model):
     languages=models.CharField(max_length=100,blank=True,null=True) 
     def __str__(self) -> str:
         return self.user_id 
-    
+
+
+class login_user(models.Model): 
+    user_id=models.CharField(max_length=100,blank=True,null=True)
+    name=models.CharField(max_length=100,blank=True,null=True)
+    email=models.EmailField(max_length=100,blank=True,null=True)
+    mobile_no=models.IntegerField(blank=True,null=True)
+    image=models.ImageField(upload_to="image",blank=True,null=True) 
+    password=models.CharField(max_length=100,blank=True,null=True)
+    languages=models.CharField(max_length=100,blank=True,null=True)
+    theme=models.CharField(max_length=100,blank=True,null=True)
+    def __str__(self) -> str:
+        return self.user_id 

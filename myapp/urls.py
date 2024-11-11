@@ -31,4 +31,7 @@ urlpatterns = [
 
     path('user/', user_view.as_view()),
     path('user/<int:id>/', user_view.as_view()),
+
+    path('user_data/', login_user_view.as_view()),
+    path('user_data/<int:id>/', login_user_view.as_view()),
 ]

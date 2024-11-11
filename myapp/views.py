@@ -163,3 +163,53 @@ class user_view(APIView):
                 return Response({'status': "invalid id"})
         else:
             return Response({'status': "invalid data"})
+
+
+# --------------- Login User View ----------------------  
+      
+class login_user_view(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                uid = login_user.objects.get(id=id)
+                serializer = login_user_serializers(uid)
+                return Response({'status': 'success', 'data': serializer.data})
+            except login_user.DoesNotExist:
+                return Response({'status': "Invalid"})
+        else:
+            uid = login_user.objects.all().order_by("-id")
+            serializer = login_user_serializers(uid, many=True)
+            return Response({'status': 'success', 'data': serializer.data})
+
+    def post(self, request):
+        serializer = login_user_serializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def patch(self, request, id=None):
+        try:
+            uid = login_user.objects.get(id=id)
+        except login_user.DoesNotExist:
+            return Response({'status': "invalid data"})
+        
+        serializer = login_user_serializers(uid, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                uid = login_user.objects.get(id=id)
+                uid.delete()
+                return Response({'status': 'Deleted data'})
+            except user.DoesNotExist:
+                return Response({'status': "invalid id"})
+        else:
+            return Response({'status': "invalid data"})
+
