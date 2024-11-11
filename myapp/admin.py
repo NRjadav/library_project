@@ -4,5 +4,13 @@ from .models import *
 
 
 admin.site.register(category)
+
 admin.site.register(author)
+
 admin.site.register(user)
+
+admin.site.register(login_user)
+
+admin.site.register(admin_login)
+
+admin.site.register(Books)

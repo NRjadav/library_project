@@ -2,7 +2,9 @@
 from rest_framework import serializers
 from .models import*
 from googletrans import Translator
-#------------- category ----------------
+
+
+# ===================== Category ===================
 
 class category_serializers(serializers.Serializer):
     
@@ -52,7 +54,7 @@ class category_serializers(serializers.Serializer):
         return instance        
     
 
-#-------------Author_serializers ----------------
+#  ===================== Author ===================
     
 
     
@@ -89,7 +91,7 @@ class author_serializers(serializers.Serializer):
         return representation 
         
 
-#-------------User_serializers ----------------
+# ===================== User ===================
 
 class user_serializers(serializers.Serializer):
     id = serializers.IntegerField(required=False)
@@ -118,7 +120,7 @@ class user_serializers(serializers.Serializer):
             representation['languages'] = ""
         return representation  
 
-#-------------Login_User_serializers ----------------
+# ===================== Login User ===================
 
 class login_user_serializers(serializers.Serializer):
     id = serializers.IntegerField(required=False)
@@ -152,4 +154,112 @@ class login_user_serializers(serializers.Serializer):
        
         instance.save()
         return instance   
+
+# ===================== Admin Login ===================
     
+class admin_login_serializers(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    email=serializers.CharField(max_length=50,required=True)
+    password=serializers.CharField(max_length=50,required=True)
+
+    class Meta:
+        models=admin_login
+        fields ='__all__'
+        exclude = ('id',)
+
+
+    def create(self, validated_data):
+        return admin_login.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.email=validated_data.get('email',instance.email)
+        instance.password=validated_data.get('password',instance.password)
+
+        instance.save()
+        return instance
+    
+
+
+
+#  =============== Use Book Serializer   =================
+class category___Serializer(serializers.ModelSerializer):
+   
+    
+    class Meta:
+        model = category
+        fields ='__all__'
+
+# =============== Use Book Serializer   =================
+class author___Serializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = author
+        fields ='__all__'
+
+# =============== Book =================
+
+class BooksSerializer(serializers.ModelSerializer):
+    author_data = serializers.PrimaryKeyRelatedField(many=True, queryset=author.objects.all(), required=False)
+    category_data = serializers.PrimaryKeyRelatedField(many=True, queryset=category.objects.all(), required=False)
+    book_keyword_english = serializers.ListField(
+        child=serializers.CharField(max_length=255, allow_blank=True),
+        required=False
+    )
+    book_keyword_hindi = serializers.ListField(
+        child=serializers.CharField(max_length=255, allow_blank=True),
+        required=False
+    )
+    book_front_image=serializers.ImageField(required=False)
+    class Meta:
+        model = Books
+        fields = '__all__'
+        # exclude = ('id',)  # If you wish to exclude `id`, otherwise remove this line.
+    
+    def create(self, validated_data):
+        author_data = validated_data.pop('author_data', [])
+        category_data = validated_data.pop('category_data', [])
+        book = Books.objects.create(**validated_data)
+        book.author_data.set(author_data)
+        book.category_data.set(category_data)
+        return book
+
+  
+        
+    def update(self, instance, validated_data):
+        instance.book_name_english = validated_data.get('book_name_english', instance.book_name_english)
+        instance.book_name_hindi = validated_data.get('book_name_hindi', instance.book_name_hindi)
+        instance.book_front_image = validated_data.get('book_front_image', instance.book_front_image)
+        instance.book_languages = validated_data.get('book_languages', instance.book_languages)
+        instance.book_details_english = validated_data.get('book_details_english', instance.book_details_english)
+        instance.book_details_hindi = validated_data.get('book_details_hindi', instance.book_details_hindi)
+        instance.book_price_discount = validated_data.get('book_price_discount', instance.book_price_discount)
+        instance.book_price = validated_data.get('book_price', instance.book_price)
+        instance.book_keyword_english = validated_data.get('book_keyword_english', instance.book_keyword_english)
+        instance.book_keyword_hindi = validated_data.get('book_keyword_hindi', instance.book_keyword_hindi)
+        
+
+        if 'author_data' in validated_data:
+            instance.author_data.set(validated_data.get('author_data'))
+        if 'category_data' in validated_data:
+            instance.category_data.set(validated_data.get('category_data'))
+
+        instance.save()
+        return instance
+    
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        # Serialize each related category in the `category_data` ManyToMany field
+        
+        if not instance.book_front_image:
+            representation['book_front_image'] = instance.book_name_english
+    
+        
+        representation['category_data'] = category___Serializer(instance.category_data.all(), many=True).data if instance.category_data.exists() else None
+        
+        representation['author_data'] = author___Serializer(instance.author_data.all(), many=True).data if instance.author_data.exists() else None
+        
+        return representation
+            
+
+

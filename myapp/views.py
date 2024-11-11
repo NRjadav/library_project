@@ -10,7 +10,8 @@ def home(request):
     return HttpResponse("hello1")
 
 
-# --------------- Category View ----------------------  
+# ======================== Category =========================
+
       
 class category_view(APIView):
     def get(self, request, id=None):
@@ -59,7 +60,8 @@ class category_view(APIView):
             return Response({'status': "invalid data"})
 
 
-# --------------- Author View ----------------------  
+# ======================== Author =========================
+
       
 class author_view(APIView):
     def get(self, request, id=None , category_id=None ):
@@ -116,7 +118,8 @@ class author_view(APIView):
         else:
             return Response({'status': "invalid data"})
 
-# --------------- User View ----------------------  
+# ======================== User =========================
+
       
 class user_view(APIView):
     def get(self, request, id=None):
@@ -165,7 +168,8 @@ class user_view(APIView):
             return Response({'status': "invalid data"})
 
 
-# --------------- Login User View ----------------------  
+# ======================== Login User =========================
+
       
 class login_user_view(APIView):
     def get(self, request, id=None):
@@ -212,4 +216,135 @@ class login_user_view(APIView):
                 return Response({'status': "invalid id"})
         else:
             return Response({'status': "invalid data"})
+
+
+# ====================== Admin Login =======================
+        
+class admin_login_view(APIView):
+    def get(self,request,id=None , email=None):
+
+        if id:
+
+            try:
+                uid=admin_login.objects.get(id=id)
+                serializer=admin_login_serializers(uid)
+                return Response({'status':'success','data':serializer.data})
+            except:
+                return Response({'status':"Invalid email"})
+        elif email:
+
+            try:
+                uid=admin_login.objects.get(email=email)
+                serializer=admin_login_serializers(uid)
+                return Response({'status':'success','data':serializer.data})
+            except:
+                return Response({'status':"Invalid email"})
+        else:
+            uid=admin_login.objects.all().order_by("-id")
+            serializer=admin_login_serializers(uid,many=True)
+            return Response({'status':'success','data':serializer.data})
+
+    def post(self,request):
+            serializer=admin_login_serializers(data=request.data)
+            if serializer.is_valid():
+                email = serializer.validated_data.get('email')
+                password = serializer.validated_data.get('password')
+
+                uid=admin_login.objects.filter(email=email).exists()
+                if uid:
+                    uid=admin_login.objects.get(email=email)
+                    if uid.password == password:
+                        serializer=admin_login_serializers(uid)
+
+                        return Response({'status':'success','data':serializer.data})
+                    else:
+                        return Response({'status':'invalid password'})
+                else:
+                    return Response({'status':'invalid email'})
+
+            else:
+                return Response({'status':"invalid data"})
+
+
+    def patch(self,request,id=None):
+        try:
+            uid=admin_login.objects.get(id=id)
+        except:
+            return Response({'status':"invalid email"})
+        serializer=admin_login_serializers(uid,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status':'success','data':serializer.data})
+        else:
+            return Response({'status':"invalid email"})
+    def delete(self,request,id=None,email=None):
+        if id:
+            try:
+                uid=admin_login.objects.get(id=id)
+                uid.delete()
+                return Response({'status':'Deleted data'})
+            except:
+                return Response({'status':"invalid id"})
+        elif email:
+            del request.session['email']
+            return Response({'status': 'Logged out successfully'})
+
+        else:
+            return Response({'status':"invalid data"})
+    def logout(self, request):
+        try:
+            del request.session['email']
+        except KeyError:
+            pass
+        return Response({'status': 'Logged out successfully'})
+
+
+# ========================= Book  ============================
+      
+class books_view(APIView):
+    def get(self, request, id=None):
+        if id:
+            try:
+                uid = Books.objects.get(id=id)
+                serializer = BooksSerializer(uid)
+                return Response({'status': 'success', 'data': serializer.data})
+            except Books.DoesNotExist:
+                return Response({'status': "Invalid"})
+        else:
+            uid = Books.objects.all().order_by("-id")
+            serializer = BooksSerializer(uid, many=True)
+            return Response({'status': 'success', 'data': serializer.data})
+
+    def post(self, request):
+        serializer = BooksSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def patch(self, request, id=None):
+        try:
+            uid = Books.objects.get(id=id)
+        except Books.DoesNotExist:
+            return Response({'status': "invalid data"})
+        
+        serializer = BooksSerializer(uid, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                uid = Books.objects.get(id=id)
+                uid.delete()
+                return Response({'status': 'Deleted data'})
+            except Books.DoesNotExist:
+                return Response({'status': "invalid id"})
+        else:
+            return Response({'status': "invalid data"})
+
 

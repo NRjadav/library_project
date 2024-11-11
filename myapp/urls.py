@@ -20,18 +20,39 @@ from .import views
 from .views import *
 
 urlpatterns = [
+
+#  ======================== Show Messages  =========================
+     
     path('', views.home, name='home'),
 
+# ======================== Category =========================
+    
     path('category/', category_view.as_view()),
     path('category/<int:id>/', category_view.as_view()),
+
+# ======================== Author ===========================
 
     path('author/', author_view.as_view()),
     path('author/<int:id>/', author_view.as_view()),
     path('author/category_id/<int:category_id>/', author_view.as_view()),
 
+# ======================== User =============================
+
     path('user/', user_view.as_view()),
     path('user/<int:id>/', user_view.as_view()),
 
+# ======================== Login User ========================
+
     path('user_data/', login_user_view.as_view()),
     path('user_data/<int:id>/', login_user_view.as_view()),
+
+# ======================== Admin Login ========================
+
+    path('admin_login/', admin_login_view.as_view()),
+    path('admin_login/<int:id>/', admin_login_view.as_view()),
+    
+# ======================== Book ===============================
+    
+    path('books/', books_view.as_view()),
+    path('books/<int:id>/', books_view.as_view()),
 ]
