@@ -348,3 +348,399 @@ class books_view(APIView):
             return Response({'status': "invalid data"})
 
 
+# ===================== Ad ===================
+        
+
+class ad_view(APIView):
+
+    def get(self,request,id=None):
+
+        if id:
+            try:
+                uid = ad.objects.get(id=id)
+                serializer = ad_serializers(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})
+
+        else:
+            uid = ad.objects.order_by("-id")
+            serializer = ad_serializers(uid,many=True)
+
+            return Response({'status' : "success",'data' : serializer.data})
+
+    def post(self,request):
+        # pid=ad.objects.all()
+        # pid.delete()
+        serializer = ad_serializers(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data..."})
+
+
+
+    def patch(self,request,id=None):
+
+        if id:
+            uid = ad.objects.get(id=id)
+
+        else:
+            return Response({'status' : 'success','data':serializer.data})
+
+        serializer = ad_serializers(uid,data=request.data,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data..."})
+
+
+    def delete(self,request,id=None):
+        if id:
+            try:
+                uid = ad.objects.get(id=id).delete()
+
+                return Response({'status' : 'success'})
+            except:
+                return Response({'status' : "invalid data..."})
+        else:
+                   return Response({'status' : "invalid data..."})
+
+
+# ================== Notification ====================
+
+
+
+class notification_view(APIView):
+
+    def get(self,request,id=None):
+
+        if id:
+            try:
+                uid = notification.objects.get(id=id)
+                serializer = NotificationSerializer(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})
+
+        else:
+            uid = notification.objects.order_by("-id")
+            serializer = NotificationSerializer(uid,many=True)
+
+            return Response({'status' : "success",'data' : serializer.data})
+
+    def post(self,request):
+        # pid=Ad1.objects.all()
+        # pid.delete()
+        serializer = NotificationSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+
+    def patch(self,request,id=None):
+
+        if id:
+            uid = notification.objects.get(id=id)
+
+        else:
+            return Response({'status' : 'success','data':serializer.data})
+
+        serializer = NotificationSerializer(uid,data=request.data,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+    def delete(self,request,id=None):
+        if id:
+            try:
+                uid = notification.objects.get(id=id).delete()
+
+                return Response({'status' : 'success'})
+            except:
+                return Response({'status' : "invalid data..."})
+        else:
+                   return Response({'status' : "invalid data..."})
+
+# ================== Hylighter ====================
+
+
+
+class hylighter_view(APIView):
+
+    def get(self,request,id=None):
+
+        if id:
+            try:
+                uid = hylighter.objects.get(id=id)
+                serializer = HylighterSerializer(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})
+
+        else:
+            uid = hylighter.objects.order_by("-id")
+            serializer = HylighterSerializer(uid,many=True)
+
+            return Response({'status' : "success",'data' : serializer.data})
+
+    def post(self,request):
+        # pid=Ad1.objects.all()
+        # pid.delete()
+        serializer = HylighterSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+
+    def patch(self,request,id=None):
+
+        if id:
+            uid = hylighter.objects.get(id=id)
+
+        else:
+            return Response({'status' : 'success','data':serializer.data})
+
+        serializer = HylighterSerializer(uid,data=request.data,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+    def delete(self,request,id=None):
+        if id:
+            try:
+                uid = hylighter.objects.get(id=id).delete()
+
+                return Response({'status' : 'success'})
+            except:
+                return Response({'status' : "invalid data..."})
+        else:
+                   return Response({'status' : "invalid data..."})
+
+# =========================== Add Cart Book ================    
+
+
+class add_book_view(APIView):
+
+    def get(self,request,id=None):
+
+        if id:
+            try:
+                uid = add_book.objects.get(id=id)
+                serializer = Add_Book_Serializer(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})
+
+        else:
+            uid = add_book.objects.order_by("-id")
+            serializer = Add_Book_Serializer(uid,many=True)
+
+            return Response({'status' : "success",'data' : serializer.data})
+
+    def post(self,request):
+      
+        serializer = Add_Book_Serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+
+    def patch(self,request,id=None):
+
+        if id:
+            uid = add_book.objects.get(id=id)
+
+        else:
+            return Response({'status' : 'success','data':serializer.data})
+
+        serializer = Add_Book_Serializer(uid,data=request.data,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+    def delete(self,request,id=None):
+        if id:
+            try:
+                uid = add_book.objects.get(id=id).delete()
+
+                return Response({'status' : 'success'})
+            except:
+                return Response({'status' : "invalid data..."})
+        else:
+                   return Response({'status' : "invalid data..."})
+
+# =========================== Add Book Wishlist ================    
+
+
+class add_wishlist_book_view(APIView):
+
+    def get(self,request,id=None):
+
+        if id:
+            try:
+                uid = wishlist.objects.get(id=id)
+                serializer = Add_Wishlist_Book_Serializer(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})
+
+        else:
+            uid = wishlist.objects.order_by("-id")
+            serializer = Add_Wishlist_Book_Serializer(uid,many=True)
+
+            return Response({'status' : "success",'data' : serializer.data})
+
+    def post(self,request):
+      
+        serializer = Add_Wishlist_Book_Serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+
+    def patch(self,request,id=None):
+
+        if id:
+            uid = wishlist.objects.get(id=id)
+
+        else:
+            return Response({'status' : 'success','data':serializer.data})
+
+        serializer = Add_Wishlist_Book_Serializer(uid,data=request.data,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+    def delete(self,request,id=None):
+        if id:
+            try:
+                uid = wishlist.objects.get(id=id).delete()
+
+                return Response({'status' : 'success'})
+            except:
+                return Response({'status' : "invalid data..."})
+        else:
+                   return Response({'status' : "invalid data..."})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from django.core.mail import send_mail
+from django.conf import settings
+from rest_framework.decorators import api_view
+from django.template.loader import render_to_string
+@api_view(['POST'])
+def send_test_email(request):
+    # Extract subject, message, and recipient from the request data
+    subject = request.data.get('subject', 'Test Email')
+    message = request.data.get('message', 'This is a test email sent from Django.')
+    recipient = request.data.get('recipient', None)
+
+    if recipient is None:
+        return Response({"error": "Recipient email is required."})
+
+    from_email = settings.EMAIL_HOST_USER
+
+    # Render the HTML content from the template
+    # html_content = render_to_string('email_template.html', {
+    #     'subject': subject,
+    #     'message': message
+    # })
+
+    try:
+        send_mail(subject, message, from_email, [recipient]) #, html_message=html_content)
+        return Response({"success": "HTML email sent successfully!"})
+    except Exception as e:
+        return Response({"error": str(e)})

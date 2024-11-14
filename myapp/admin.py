@@ -14,3 +14,9 @@ admin.site.register(login_user)
 admin.site.register(admin_login)
 
 admin.site.register(Books)
+
+admin.site.register(hylighter)
+
+admin.site.register(add_book)
+
+admin.site.register(wishlist)

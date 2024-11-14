@@ -44,6 +44,7 @@ class user(models.Model):
 
 class login_user(models.Model): 
     user_id=models.CharField(max_length=100,blank=True,null=True)
+    device_token=models.CharField(max_length=50,blank=True,null=True)
     name=models.CharField(max_length=100,blank=True,null=True)
     email=models.EmailField(max_length=100,blank=True,null=True)
     mobile_no=models.IntegerField(blank=True,null=True)
@@ -52,7 +53,7 @@ class login_user(models.Model):
     languages=models.CharField(max_length=100,blank=True,null=True)
     theme=models.CharField(max_length=100,blank=True,null=True)
     def __str__(self) -> str:
-        return self.user_id 
+        return self.name 
     
 
 
@@ -80,7 +81,54 @@ class Books(models.Model):
     book_price=models.FloatField()
     book_keyword_english=ListTextField(base_field=models.CharField(max_length=255,blank=True,null=True),size=100,blank=True,null=True)
     book_keyword_hindi=ListTextField(base_field=models.CharField(max_length=255,blank=True,null=True),size=100,blank=True,null=True)
-    
+    purchase = models.BooleanField(default=False)
     
     def __str__(self):
         return self.book_name_hindi    
+
+
+# ======================= Ad ========================
+
+
+
+class ad(models.Model):
+    file=models.FileField(upload_to="video")
+    type = models.CharField(max_length=500,blank=True, null=True)           
+
+# ======================= Notification ==================
+    
+
+class notification(models.Model):
+    user_data = models.ManyToManyField(login_user, blank=True, null=True)
+    message=models.TextField()
+    title = models.CharField(max_length=255)
+    read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+
+# =========================== Hylighter ================
+    
+class hylighter(models.Model):    
+    user_data = models.ForeignKey(login_user,on_delete=models.CASCADE)  
+    book_data = models.ForeignKey(Books,on_delete=models.CASCADE)  
+    color = models.CharField(max_length=255)
+    words=ListTextField(base_field=models.CharField(max_length=1000),size=1000,blank=True,null=True)
+    timestamp = models.DateTimeField(auto_now=True)
+
+# =========================== Add Cart Book ================    
+    
+class add_book(models.Model):
+    user_data = models.ForeignKey(login_user,on_delete=models.CASCADE)  
+    book_data = models.ForeignKey(Books,on_delete=models.CASCADE)
+    qty=models.IntegerField()
+    total=models.IntegerField()
+
+# =========================== Add Wishlist Book ================    
+
+
+class wishlist(models.Model):
+    user_data = models.ForeignKey(login_user,on_delete=models.CASCADE)  
+    book_data = models.ManyToManyField(Books)
+    
+

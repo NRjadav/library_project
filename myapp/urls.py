@@ -55,4 +55,32 @@ urlpatterns = [
     
     path('books/', books_view.as_view()),
     path('books/<int:id>/', books_view.as_view()),
+
+# ======================== Ad ===============================
+
+    path('advertisement/', ad_view.as_view()),
+    path('advertisement/<int:id>/', ad_view.as_view()),
+
+# ==================== Notification =========================
+
+    path('notification/', notification_view.as_view()),
+    path('notification/<int:id>/', notification_view.as_view()), 
+
+# ==================== Hylighter =========================
+
+    path('hylighter/', hylighter_view.as_view()),
+    path('hylighter/<int:id>/', hylighter_view.as_view()),
+
+# =========================== Add Cart Book ================     
+
+    path('add_cart_book/', add_book_view.as_view()),
+    path('add_cart_book/<int:id>/', add_book_view.as_view()),
+
+# =========================== Add Wishlist Book ================     
+
+    path('add_wishlist_book/', add_wishlist_book_view.as_view()),
+    path('add_wishlist_book/<int:id>/', add_wishlist_book_view.as_view()),
+
+
+    path('send-email/', send_test_email, name='send_test_email'),
 ]
