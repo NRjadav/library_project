@@ -8,7 +8,8 @@ from django_mysql.models import ListTextField
 class category(models.Model):
     category_english = models.CharField(max_length=255)
     category_hindi = models.CharField(max_length=255)
-
+    timestamp = models.DateTimeField(auto_now_add=True,blank=True,null=True)
+    number=models.IntegerField(default=0,blank=True,null=True)
     def __str__(self) -> str:
         return self.category_english
     
@@ -26,7 +27,8 @@ class author(models.Model):
     category_data=models.ForeignKey(category,on_delete=models.CASCADE,blank=True,null=True)  
     author_english=models.CharField(max_length=50,blank=True,null=True)      
     author_hindi=models.CharField(max_length=50,blank=True,null=True) 
-
+    timestamp = models.DateTimeField(auto_now_add=True,blank=True,null=True)
+    
     def __str__(self) -> str:
         return self.author_english     
 
@@ -52,6 +54,9 @@ class login_user(models.Model):
     password=models.CharField(max_length=100,blank=True,null=True)
     languages=models.CharField(max_length=100,blank=True,null=True)
     theme=models.CharField(max_length=100,blank=True,null=True)
+    timestamp = models.DateTimeField(auto_now_add=True,blank=True,null=True)
+    password_time = models.DateTimeField(blank=True,null=True)
+    premium = models.BooleanField(default=False)
     def __str__(self) -> str:
         return self.name 
     
@@ -66,22 +71,32 @@ class admin_login(models.Model):
     def __str__(self):
         return self.email     
 
+# ============== Book Languages ===================
+
+class Language(models.Model):
+    languages=models.CharField(max_length=255,blank=True,null=True)
+
+
+
 # ================= Book =======================
     
 class Books(models.Model):
     book_name_english=models.CharField(max_length=255,blank=True,null=True)
     book_name_hindi=models.CharField(max_length=255,blank=True,null=True)
     book_front_image=models.ImageField(upload_to='image', null=True, blank=True)
-    book_languages=models.CharField(max_length=255,blank=True,null=True)
+    book_file=models.FileField(upload_to='book', null=True, blank=True)
     author_data=models.ManyToManyField(author,blank=True,null=True)
     category_data=models.ManyToManyField(category,blank=True,null=True)
+    
+    language_data=models.ManyToManyField(Language,blank=True,null=True)
     book_details_english=models.TextField(blank=True,null=True)
     book_details_hindi=models.TextField(blank=True,null=True)
     book_price_discount=models.IntegerField()
     book_price=models.FloatField()
-    book_keyword_english=ListTextField(base_field=models.CharField(max_length=255,blank=True,null=True),size=100,blank=True,null=True)
-    book_keyword_hindi=ListTextField(base_field=models.CharField(max_length=255,blank=True,null=True),size=100,blank=True,null=True)
+    book_free_demo=models.FloatField(default=0)
+    book_keywords=ListTextField(base_field=models.CharField(max_length=255,blank=True,null=True),size=100,blank=True,null=True)
     purchase = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True,blank=True,null=True)
     
     def __str__(self):
         return self.book_name_hindi    
@@ -129,6 +144,13 @@ class add_book(models.Model):
 
 class wishlist(models.Model):
     user_data = models.ForeignKey(login_user,on_delete=models.CASCADE)  
-    book_data = models.ManyToManyField(Books)
-    
+    book_data = models.ForeignKey(Books,on_delete=models.CASCADE,blank=True,null=True)
 
+
+# =========================== Hylighter ================
+
+
+class hylighter1(models.Model):    
+    user_data = models.ForeignKey(login_user,on_delete=models.CASCADE)  
+    book_data = models.ForeignKey(Books,on_delete=models.CASCADE)  
+    words = models.TextField(default='[]',blank=True,null=True)

@@ -3,7 +3,7 @@ from .models import *
 from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from django.db.models import Case, When, Value, IntegerField
 # Create your views here.
 
 def home(request):
@@ -24,6 +24,13 @@ class category_view(APIView):
                 return Response({'status': "Invalid"})
         else:
             uid = category.objects.all().order_by("-id")
+            """category.objects.annotate(
+            sort_order=Case(
+                When(number=0, then=Value(1)),  # Give a lower priority to 0 numbers
+                default=Value(0),  # For other values, use priority 0
+                output_field=IntegerField()
+            )
+        ).order_by("sort_order", "number", "-timestamp")"""
             serializer = category_serializers(uid, many=True)
             return Response({'status': 'success', 'data': serializer.data})
 
@@ -118,6 +125,64 @@ class author_view(APIView):
         else:
             return Response({'status': "invalid data"})
 
+# ======================== Languages =========================
+
+      
+class languages_view(APIView):
+    def get(self, request, id=None , category_id=None ):
+        if id:
+            try:
+                uid = Language.objects.get(id=id)
+                serializer = Languages_serializers(uid)
+                return Response({'status': 'success', 'data': serializer.data})
+            except Language.DoesNotExist:
+                return Response({'status': "Invalid"})
+        elif category_id:
+            try:
+                uid=Language.objects.filter(category_data__id=category_id).order_by("-id")
+                
+                serializer=Languages_serializers(uid,many=True)
+                print(len(serializer.data))
+                return Response({'status':'success','data':serializer.data})
+            except:
+                return Response({'status':"Invalid"})       
+        else:
+            uid = Language.objects.all().order_by("-id")
+            serializer = Languages_serializers(uid, many=True)
+            return Response({'status': 'success', 'data': serializer.data})
+
+    def post(self, request):
+        serializer = Languages_serializers(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def patch(self, request, id=None):
+        try:
+            uid = Language.objects.get(id=id)
+        except Language.DoesNotExist:
+            return Response({'status': "invalid data"})
+        
+        serializer = Languages_serializers(uid, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'status': 'success', 'data': serializer.data})
+        else:
+            return Response({'status': "invalid data", 'errors': serializer.errors})
+
+    def delete(self, request, id=None):
+        if id:
+            try:
+                uid = Language.objects.get(id=id)
+                uid.delete()
+                return Response({'status': 'Deleted data'})
+            except Language.DoesNotExist:
+                return Response({'status': "invalid id"})
+        else:
+            return Response({'status': "invalid data"})            
+
 # ======================== User =========================
 
       
@@ -172,14 +237,21 @@ class user_view(APIView):
 
       
 class login_user_view(APIView):
-    def get(self, request, id=None):
+    def get(self, request, id=None,email=None):
         if id:
             try:
-                uid = login_user.objects.get(id=id)
+                uid = login_user.objects.get(user_id=id)
                 serializer = login_user_serializers(uid)
                 return Response({'status': 'success', 'data': serializer.data})
             except login_user.DoesNotExist:
                 return Response({'status': "Invalid"})
+        elif email:
+            try:
+                uid = login_user.objects.get(email=email)
+                serializer = login_user_serializers(uid)
+                return Response({'status': 'success', 'data': serializer.data})
+            except login_user.DoesNotExist:
+                return Response({'status': "Invalid"})        
         else:
             uid = login_user.objects.all().order_by("-id")
             serializer = login_user_serializers(uid, many=True)
@@ -193,18 +265,31 @@ class login_user_view(APIView):
         else:
             return Response({'status': "invalid data", 'errors': serializer.errors})
 
-    def patch(self, request, id=None):
-        try:
-            uid = login_user.objects.get(id=id)
-        except login_user.DoesNotExist:
-            return Response({'status': "invalid data"})
-        
-        serializer = login_user_serializers(uid, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'status': 'success', 'data': serializer.data})
-        else:
-            return Response({'status': "invalid data", 'errors': serializer.errors})
+    def patch(self, request, id=None,email=None):
+        if id:
+            try:
+                uid = login_user.objects.get(user_id=id)
+            except login_user.DoesNotExist:
+                return Response({'status': "invalid data"})
+            
+            serializer = login_user_serializers(uid, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'success', 'data': serializer.data})
+            else:
+                return Response({'status': "invalid data", 'errors': serializer.errors})
+        elif email:    
+            try:
+                uid = login_user.objects.get(email=email)
+            except login_user.DoesNotExist:
+                return Response({'status': "invalid data"})
+            
+            serializer = login_user_serializers(uid, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'success', 'data': serializer.data})
+            else:
+                return Response({'status': "invalid data", 'errors': serializer.errors})
 
     def delete(self, request, id=None):
         if id:
@@ -677,6 +762,80 @@ class add_wishlist_book_view(APIView):
 
 
 
+# ================== Hylighter ====================
+
+
+
+class hylighter_view1(APIView):
+
+    def get(self,request,id=None,user_id=None,book_id=None):
+
+        if id:
+            try:
+                uid = hylighter1.objects.get(id=id)
+                serializer = HylighterSerializer1(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})
+        if user_id and book_id:
+            try:
+                uid = hylighter1.objects.get(user_data__user_id=user_id,book_data__id=book_id)
+                serializer = HylighterSerializer1(uid)
+
+                return Response({'status' : 'success','data':serializer.data})
+            except:
+                return Response({'status' : "invalid data..."})    
+
+        else:
+            uid = hylighter1.objects.order_by("-id")
+            serializer = HylighterSerializer1(uid,many=True)
+
+            return Response({'status' : "success",'data' : serializer.data})
+
+    def post(self,request):
+        # pid=Ad1.objects.all()
+        # pid.delete()
+        serializer = HylighterSerializer1(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+
+    def patch(self,request,id=None,user_id=None,book_id=None):
+
+        if id:
+            uid = hylighter1.objects.get(id=id)
+        elif user_id and book_id:    
+            uid = hylighter1.objects.get(user_data__user_id=user_id,book_data__id=book_id)
+        else:
+            return Response({'status' : 'success','data':serializer.data})
+
+        serializer = HylighterSerializer1(uid,data=request.data,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'status':'success','data' : serializer.data})
+        else:
+            return Response({'status' : "invalid data...","errors":serializer.errors})
+
+
+    def delete(self,request,id=None):
+        if id:
+            try:
+                uid = hylighter1.objects.get(id=id).delete()
+
+                return Response({'status' : 'success'})
+            except:
+                return Response({'status' : "invalid data..."})
+        else:
+                   return Response({'status' : "invalid data..."})
 
 
 
@@ -685,8 +844,44 @@ class add_wishlist_book_view(APIView):
 
 
 
+class HylighterDeleteWordView(APIView):
+    def get(self, request, user_id=None, book_id=None):
+        try:
+            # Get the user's highlighter data
+            highlighter_data = hylighter1.objects.get(user_data__user_id=user_id, book_data__id=book_id)
+            # Load the current 'words' field
+            words_list = json.loads(highlighter_data.words)
+            return Response({'status': 'success', 'words': words_list})
+        except hylighter1.DoesNotExist:
+            return Response({'status': 'error', 'message': 'User or book not found'})
+        except Exception as e:
+            return Response({'status': 'error', 'message': str(e)})
+    def delete(self, request, user_id=None,book_id=None, word_id=None):
+        try:
+            # Get the user's highlighter data (assuming you have a model for this, like `Hylighter1`)
+            highlighter_data = hylighter1.objects.get(user_data__user_id=user_id,book_data__id=book_id)
+            # Load the current 'words' field (assuming it is stored as a JSON string)
+            words_list = json.loads(highlighter_data.words)
+            print(words_list)
 
+            # Find the word by its id and remove it
+            word_to_delete = next((word for word in words_list if word.get('id') == word_id), None)
+            
+            if word_to_delete:
+                words_list.remove(word_to_delete)  # Remove the word from the list
 
+                # Save the updated words list back to the database
+                highlighter_data.words = json.dumps(words_list)
+                highlighter_data.save()
+
+                return Response({'status': 'success', 'message': 'Word deleted successfully'})
+            else:
+                return Response({'status': 'error', 'message': 'Word not found'})
+
+        except hylighter1.DoesNotExist:
+            return Response({'status': 'error', 'message': 'User not found'})
+        except Exception as e:
+            return Response({'status': 'error', 'message': str(e)})
 
 
 
@@ -721,13 +916,15 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.decorators import api_view
 from django.template.loader import render_to_string
+from django.utils import timezone
+from datetime import timedelta
 @api_view(['POST'])
 def send_test_email(request):
     # Extract subject, message, and recipient from the request data
     subject = request.data.get('subject', 'Test Email')
     message = request.data.get('message', 'This is a test email sent from Django.')
-    recipient = request.data.get('recipient', None)
-
+    recipient = request.data.get('email', None)
+    
     if recipient is None:
         return Response({"error": "Recipient email is required."})
 
@@ -738,9 +935,18 @@ def send_test_email(request):
     #     'subject': subject,
     #     'message': message
     # })
-
+    
     try:
         send_mail(subject, message, from_email, [recipient]) #, html_message=html_content)
+        uid=login_user.objects.get(email=recipient)
+        uid.password_time=timezone.now() 
+        uid.save()
         return Response({"success": "HTML email sent successfully!"})
     except Exception as e:
         return Response({"error": str(e)})
+    
+
+
+
+
+
