@@ -7,7 +7,7 @@ from django.db.models import Case, When, Value, IntegerField
 # Create your views here.
 
 def home(request):
-    return HttpResponse("hello1")
+    return HttpResponse("hello12345")
 
 
 # ======================== Category =========================
